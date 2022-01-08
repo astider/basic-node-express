@@ -1,4 +1,5 @@
-import express from 'express';
+import bodyParser from 'body-parser';
+import express, { NextFunction, Request, Response } from 'express';
 const cors = require('cors');
 
 const port = 3000;
@@ -30,7 +31,7 @@ app.get('/middleware', (req, res, next) => {
 
 // 3. create middleware function
 
-const middleWareFunction = (req, res, next) => {
+const middleWareFunction = (req: Request, res: Response, next: NextFunction) => {
   req.params = {
     someText: 'hello',
   };
@@ -46,6 +47,21 @@ app.get('/middleware2', middleWareFunction, (req, res) => {
 app.get('/with-cors', cors(corsOptions), function (req, res, next) {
   const { name } = req.query;
   res.send('Hello World with cors');
+});
+
+app.post('/post-normal', (req, res) => {
+  console.log(req.body);
+  res.send('ok');
+});
+
+app.post('/post-with-parser', bodyParser.json(), (req, res) => {
+  console.log(req.body);
+  res.send('ok');
+});
+
+app.post('/post-form-with-parser', bodyParser.urlencoded({ extended: false }), (req, res) => {
+  console.log(req.body);
+  res.send('ok');
 });
 
 app.listen(port, () => {
